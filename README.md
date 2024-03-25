@@ -162,6 +162,12 @@ Contribuições são bem-vindas! Se você quiser melhorar este projeto, siga est
 4. Faça push para a branch (`git push origin feature/MinhaFeature`).
 5. Abra um Pull Request.
 
+
+### Observação: 
+
+O arquivo .env.example já inclui as configurações essenciais para o banco de dados, chave de aplicativo e integração com o Asaas. Antes de iniciar a aplicação, lembre-se de configurar o seu arquivo .env com as informações pertinentes.
+
+
 ## Licença
 
 Este projeto está licenciado sob a [Licença MIT](LICENSE).
