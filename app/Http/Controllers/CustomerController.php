@@ -71,8 +71,11 @@ class CustomerController extends Controller
             $customer->fill($request->all());
             $customer->save();
 
+
+
             // Criar o cliente no Asaas
-            $returnCustomer = $this->createAsaasCustomer($request, $customer);
+            $asaasCustomer = $this->createAsaasCustomerFromRequest($request, $customer);
+            $returnCustomer = $this->createAsaasCustomer($asaasCustomer);
 
             // Extrair o ID retornado pelo Asaas
             $asaasCustomerId = $returnCustomer->getId();
@@ -149,16 +152,16 @@ class CustomerController extends Controller
             $validatedData = $request->validated();
 
             $user = User::with('customer')->findOrFail($request->user_id);
-           
+
             // Atualizar os dados do usuário
             $user->update($request->only(['name', 'email']));
             $user->save();
 
             $userId = $request->user_id;
-            
+
             // Verificar se o usuário possui um cliente associado
             if ($user->customer) {
-               
+
                 // Obter o cliente associado ao usuário
                 $customer = $user->customer;
 
@@ -167,10 +170,11 @@ class CustomerController extends Controller
                 $customer->save();
 
                 // Atualizar o cliente no Asaas
-                $this->updateAsaasCustomer($request, $customer);
+                $asaasCustomer = $this->createAsaasCustomerFromRequest($request, $customer);
+                $this->updateAsaasCustomer($customer, $asaasCustomer);
             }
 
-          
+
             DB::commit();
         } catch (\Exception $e) {
             // Lidar com qualquer exceção inesperada
@@ -192,31 +196,41 @@ class CustomerController extends Controller
         //
     }
 
-    protected function createAsaasCustomer($request, $customer)
+    /**
+     * Cria um objeto AsaasCustomer com base nos dados do formulário.
+     *
+     * @param Request $request
+     * @param Customer $customer
+     * @return AsaasCustomer
+     */
+    private function createAsaasCustomerFromRequest(Request $request, Customer $customer)
     {
+        $asaasCustomer = new AsaasCustomer();
+        $asaasCustomer->setName($request->input('name'))
+        ->setEmail($request->input('email'))
+        ->setCpfCnpj($request->input('cpf_cnpj'))
+        ->setPhone($request->input('phone'))
+        ->setMobilePhone($request->input('mobile_phone'))
+        ->setAddress($request->input('address'))
+        ->setAddressNumber($request->input('address_number'))
+        ->setComplement($request->input('complement'))
+        ->setProvince($request->input('province'))
+        ->setPostalCode($request->input('postal_code'))
+        ->setExternalReference($customer->id)
+            ->setNotificationDisabled($request->input('notification_disabled'))
+            ->setAdditionalEmails($request->input('additional_emails'))
+            ->setMunicipalInscription($request->input('municipal_inscription'))
+            ->setStateInscription($request->input('state_inscription'))
+            ->setObservations($request->input('observations'))
+            ->setGroupName($request->input('group_name'))
+            ->setCompany($request->input('company'));
 
+        return $asaasCustomer;
+    }
+
+    protected function createAsaasCustomer($asaasCustomer)
+    {
         try {
-            $asaasCustomer = new AsaasCustomer();
-
-            $asaasCustomer->setName($request->input('name'))
-                ->setEmail($request->input('email'))
-                ->setCpfCnpj($request->input('cpf_cnpj'))
-                ->setPhone($request->input('phone'))
-                ->setMobilePhone($request->input('mobile_phone'))
-                ->setAddress($request->input('address'))
-                ->setAddressNumber($request->input('address_number'))
-                ->setComplement($request->input('complement'))
-                ->setProvince($request->input('province'))
-                ->setPostalCode($request->input('postal_code'))
-                ->setExternalReference($customer->id)
-                ->setNotificationDisabled($request->input('notification_disabled'))
-                ->setAdditionalEmails($request->input('additional_emails'))
-                ->setMunicipalInscription($request->input('municipal_inscription'))
-                ->setStateInscription($request->input('state_inscription'))
-                ->setObservations($request->input('observations'))
-                ->setGroupName($request->input('group_name'))
-                ->setCompany($request->input('company'));
-
             $response = Asaas::customer()->create($asaasCustomer);
 
             return $response;
@@ -235,30 +249,12 @@ class CustomerController extends Controller
      * @return void
      * @throws \Exception
      */
-    protected function updateAsaasCustomer($request, $customer)
+    protected function updateAsaasCustomer($customer, $asaasCustomer)
     {
         try {
-            $asaasCustomer = new AsaasCustomer();
-            $asaasCustomer->setName($request->input('name'))
-                ->setEmail($request->input('email'))
-                ->setCpfCnpj($request->input('cpf_cnpj'))
-                ->setPhone($request->input('phone'))
-                ->setMobilePhone($request->input('mobile_phone'))
-                ->setAddress($request->input('address'))
-                ->setAddressNumber($request->input('address_number'))
-                ->setComplement($request->input('complement'))
-                ->setProvince($request->input('province'))
-                ->setPostalCode($request->input('postal_code'))
-                ->setExternalReference($customer->id)
-                ->setNotificationDisabled($request->input('notification_disabled'))
-                ->setAdditionalEmails($request->input('additional_emails'))
-                ->setMunicipalInscription($request->input('municipal_inscription'))
-                ->setStateInscription($request->input('state_inscription'))
-                ->setObservations($request->input('observations'))
-                ->setGroupName($request->input('group_name'))
-                ->setCompany($request->input('company'));
-
+           
             $response = Asaas::customer()->update($customer->customer_id_external, $asaasCustomer);
+
         } catch (\Exception $e) {
             // Lidar com erros ao atualizar o cliente no Asaas
             Log::error('Erro ao atualizar o cliente no Asaas: ' . $e->getMessage());
