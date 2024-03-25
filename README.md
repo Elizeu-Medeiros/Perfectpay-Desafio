@@ -1,66 +1,167 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Projeto Laravel com Integração Asaas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Este é um projeto Laravel que demonstra a integração com a API do Asaas para gerenciamento de clientes. Ele permite criar, visualizar, atualizar e excluir clientes, além de sincronizar os dados com o Asaas.
 
-## About Laravel
+## Instalação
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Instalação
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Requisitos
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP >= 8.0
+- Composer
+- Node.js e NPM (opcional)
 
-## Learning Laravel
+### Passos para Linux
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone o repositório para sua máquina local:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    ```bash
+    git clone https://github.com/seu-usuario/seu-projeto.git
+    ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Acesse o diretório do projeto:
 
-## Laravel Sponsors
+    ```bash
+    cd seu-projeto
+    ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Instale as dependências do PHP com o Composer:
 
-### Premium Partners
+    ```bash
+    composer install
+    ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+4. Copie o arquivo `.env.example` para `.env`:
 
-## Contributing
+    ```bash
+    cp .env.example .env
+    ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. Gere a chave de aplicação do Laravel:
 
-## Code of Conduct
+    ```bash
+    php artisan key:generate
+    ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+6. Abra o arquivo `.env` e configure as variáveis de ambiente do Asaas:
 
-## Security Vulnerabilities
+    ```
+    ASASS_API_KEY=sua-chave-de-api
+    ASASS_BASE_URL=https://sandbox.asaas.com/api/v3
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+7. Configure as variáveis de conexão com o banco de dados no arquivo `.env` conforme necessário.
 
-## License
+8. Execute as migrações do banco de dados para criar as tabelas necessárias:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ```bash
+    php artisan migrate
+    ```
+
+9. Instale as dependências do frontend com o npm:
+
+    ```bash
+    npm install
+    ```
+
+10. Compile os recursos do frontend com o Laravel Mix:
+
+    ```bash
+    npm run dev
+    ```
+
+### Passos para Windows
+
+1. Clone o repositório para sua máquina local:
+
+    ```bash
+    git clone https://github.com/seu-usuario/seu-projeto.git
+    ```
+
+2. Abra o prompt de comando do Windows ou PowerShell.
+
+3. Acesse o diretório do projeto:
+
+    ```bash
+    cd seu-projeto
+    ```
+
+4. Instale as dependências do PHP com o Composer:
+
+    ```bash
+    composer install
+    ```
+
+5. Copie o arquivo `.env.example` para `.env`:
+
+    ```bash
+    copy .env.example .env
+    ```
+
+6. Gere a chave de aplicação do Laravel:
+
+    ```bash
+    php artisan key:generate
+    ```
+
+7. Abra o arquivo `.env` e configure as variáveis de ambiente do Asaas:
+
+    ```
+    ASASS_API_KEY=sua-chave-de-api
+    ASASS_BASE_URL=https://sandbox.asaas.com/api/v3
+    ```
+
+8. Configure as variáveis de conexão com o banco de dados no arquivo `.env` conforme necessário.
+
+9. Execute as migrações do banco de dados para criar as tabelas necessárias:
+
+    ```bash
+    php artisan migrate
+    ```
+
+10. Instale as dependências do frontend com o npm:
+
+    ```bash
+    npm install
+    ```
+
+11. Compile os recursos do frontend com o Laravel Mix:
+
+    ```bash
+    npm run dev
+    ```
+
+## Uso
+
+### Cadastro de Cliente
+
+1. Acesse a aplicação através do seu navegador.
+2. No menu, clique em "Register".
+3. Preencha o formulário com as informações necessárias para criar uma conta.
+4. Após o registro, faça login usando o email e senha cadastrados.
+5. No menu superior à direita, clique para expandir os menus e selecione "Meus Dados".
+6. Preencha o formulário com as informações do cliente.
+7. Clique em "Cadastrar" para confirmar o cadastro do cliente.
+
+### Atualização de Cliente
+
+1. Para editar as informações de "Meus dados".
+2. No menu superior à direita, clique para expandir os menus e selecione "Meus Dados".
+2. Clique em "Editar".
+3. Faça as alterações desejadas no formulário.
+4. Clique em "Atualizar".
+
+## Contribuição
+
+Contribuições são bem-vindas! Se você quiser melhorar este projeto, siga estas etapas:
+
+1. Faça um fork do projeto.
+2. Crie uma branch para sua feature (`git checkout -b feature/MinhaFeature`).
+3. Faça commit das suas alterações (`git commit -am 'Adicione uma nova feature'`).
+4. Faça push para a branch (`git push origin feature/MinhaFeature`).
+5. Abra um Pull Request.
+
+## Licença
+
+Este projeto está licenciado sob a [Licença MIT](LICENSE).
