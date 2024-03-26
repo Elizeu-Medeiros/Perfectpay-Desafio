@@ -24,8 +24,6 @@ class PaymentController extends Controller
 
             $payments = Payment::all();
 
-            // dd($payments);
-
             // Retornar a view com os detalhes do pagamento
             return view('payments.index', compact('payments'));
         } catch (ModelNotFoundException $e) {
@@ -101,7 +99,20 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+
+            // pega dados do usuário logado e seu relacionamente se existir
+            $payment = Payment::find($id);
+
+            // Retornar a view com os detalhes do cliente
+            return view('payments.show', compact('payment'));
+        } catch (ModelNotFoundException $e) {
+            // Redirecionar de volta com uma mensagem de erro se o cliente não for encontrado
+            return redirect()->back()->with('error', 'Pagamento não encontrado.');
+        } catch (\Exception $e) {
+            // Lidar com qualquer outra exceção inesperada
+            return redirect()->back()->with('error', 'Falha ao buscar detalhes do cliente. ' . $e->getMessage());
+        }
     }
 
     /**
