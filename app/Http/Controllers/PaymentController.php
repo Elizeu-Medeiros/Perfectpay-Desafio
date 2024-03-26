@@ -2,11 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUpdatePaymentRequest;
 use App\Models\Payment;
 use App\Models\User;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Jetimob\Asaas\Facades\Asaas;
+use Jetimob\Asaas\Entity\Customer\Customer as AsaasCustomer;
 
 class PaymentController extends Controller
 {
@@ -51,8 +56,49 @@ class PaymentController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUpdatePaymentRequest $request)
     {
+        DB::beginTransaction();
+
+        try {
+            // Obter os dados validados do formulário
+            $validatedData = $request->validated();
+
+            dd('parei aqui');
+            // Verificar e associar o cliente com o usuário, se necessário
+            // if (!$user->customer) {
+            //     $customer = new Customer();
+            //     $customer->user()->associate($user);
+            // } else {
+            //     $customer = $user->customer;
+            // }
+
+            // Preencher os dados do cliente com os dados validados do formulário
+            // $customer->fill($request->all());
+            // $customer->save();
+
+
+
+            // Criar pagamento no Asaas
+            // $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
+            // $returnCustomer = $this->createAsaasPayment($asaasPayment);
+
+            // Extrair o ID retornado pelo Asaas
+            // $asaasCustomerId = $returnCustomer->getId();
+
+            // Atualizar o modelo Customer com o ID retornado pelo Asaas
+            // $payment->customer_id_external = $asaasCustomerId;
+            // $payment->save();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            // Lidar com qualquer exceção inesperada
+            Log::error($e);
+            DB::rollback();
+            return redirect()->back()->with('error', 'Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.');
+        }
+        // Redirecionar para a página apropriada após a atualização
+        return redirect()->route('payments.show', ['payments' => $payment->id])->with('success', 'Pagamento inserido com sucesso.');
     }
 
     /**
@@ -85,5 +131,21 @@ class PaymentController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    /**
+     * Cria um objeto AsaasPayment com base nos dados do formulário.
+     *
+     * @param Request $request
+     * @param Payment $payment
+     * @return AsaasCustomer
+     */
+    private function createAsaasCustomerFromRequest(Request $request, Payment $payment)
+    {
+        $asaasCustomer = new AsaasCustomer();
+        $asaasCustomer->setName($request->input('name'));
+
+
+        return $asaasCustomer;
     }
 }

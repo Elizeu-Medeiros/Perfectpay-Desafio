@@ -1,8 +1,8 @@
-<!-- Formulário parcial para campos do customere -->
-<!-- Formulário de criação ou edição de customere -->
+<!-- Formulário parcial para campos do paymente -->
+<!-- Formulário de criação ou edição de paymente -->
 <form action="{{ isset($payment) ? route('payments.update', $payment->id) : route('payments.store') }}" method="POST">
     @csrf
-    @if (isset($customer))
+    @if (isset($payment))
     @method('PUT')
     @endif
 
@@ -19,8 +19,8 @@
 
     <!-- Campos ocultos -->
     <input type="hidden" name="id" value="{{ isset($payment) ? $payment->id : '' }}">
-    <input type="hidden" name="user_id" value="{{ isset($user) ? $user->id : '' }}">
-    <input type="hidden" name="customer_id" value="{{ isset($customer) ? $customer->id : '' }}">
+    <input type="hidden" name="customer" value="{{ isset($user->customer) ? $user->customer->customer_id_external : '' }}">
+    <input type="hidden" name="payment_id" value="{{ isset($user->payment) ? $user->payment->id : '' }}">
 
     <div class="row">
         <div class="col-md-8">
@@ -40,7 +40,7 @@
         <div class="col-md-4">
             <div class="mb-3">
                 <label class="form-label" for="billing_type">Forma de Pagamento</label>
-                <select name="billing_type" id="billing_type" class="form-control" required>
+                <select name="billing_type" id="billing_type" class="form-control">
                     <option value="UNDEFINED">Indefinido</option>
                     <option value="PIX">PIX</option>
                     <option value="BOLETO">Boleto Bancário</option>
@@ -55,8 +55,8 @@
         <!-- Valor da cobrança PIX -->
         <div class="col-md-4">
             <div class="mb-3">
-                <label class="form-label" for="pix_value">Valor da Cobrança PIX</label>
-                <input type="number" step="0.01" class="form-control" id="pix_value" name="pix_value" required>
+                <label class="form-label" for="value">Valor da Cobrança</label>
+                <input type="number" step="0.01" class="form-control" id="value" name="value">
             </div>
         </div>
 
@@ -64,7 +64,7 @@
         <div class="col-md-4">
             <div class="mb-3">
                 <label class="form-label" for="due_date">Data de Vencimento</label>
-                <input type="date" class="form-control" id="due_date" name="due_date" required>
+                <input type="date" class="form-control" id="due_date" name="due_date">
             </div>
         </div>
 
@@ -141,5 +141,5 @@
 
 
     <!-- Botão de enviar -->
-    <button type="submit" class="btn btn-primary">{{isset($customer) ?  __('Atualizar') : __('Cadastrar') }}</button>
+    <button type="submit" class="btn btn-primary">{{isset($payment) ?  __('Atualizar') : __('Cadastrar') }}</button>
 </form>
