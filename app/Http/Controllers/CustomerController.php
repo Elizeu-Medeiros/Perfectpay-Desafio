@@ -37,7 +37,7 @@ class CustomerController extends Controller
 
             return view('customer.create', compact('customer', 'user'));
         } catch (ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Customere não encontrado.');
+            return redirect()->back()->with('error', 'Cliente não encontrado.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Ocorreu um erro ao buscar o cliente. Por favor, tente novamente.');
         }
@@ -134,7 +134,7 @@ class CustomerController extends Controller
 
             return view('customer.edit', compact('customer', 'user'));
         } catch (ModelNotFoundException $e) {
-            return redirect()->back()->with('error', 'Customere não encontrado.');
+            return redirect()->back()->with('error', 'Cliente não encontrado.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Ocorreu um erro ao buscar o cliente. Por favor, tente novamente.');
         }
@@ -207,16 +207,16 @@ class CustomerController extends Controller
     {
         $asaasCustomer = new AsaasCustomer();
         $asaasCustomer->setName($request->input('name'))
-        ->setEmail($request->input('email'))
-        ->setCpfCnpj($request->input('cpf_cnpj'))
-        ->setPhone($request->input('phone'))
-        ->setMobilePhone($request->input('mobile_phone'))
-        ->setAddress($request->input('address'))
-        ->setAddressNumber($request->input('address_number'))
-        ->setComplement($request->input('complement'))
-        ->setProvince($request->input('province'))
-        ->setPostalCode($request->input('postal_code'))
-        ->setExternalReference($customer->id)
+            ->setEmail($request->input('email'))
+            ->setCpfCnpj($request->input('cpf_cnpj'))
+            ->setPhone($request->input('phone'))
+            ->setMobilePhone($request->input('mobile_phone'))
+            ->setAddress($request->input('address'))
+            ->setAddressNumber($request->input('address_number'))
+            ->setComplement($request->input('complement'))
+            ->setProvince($request->input('province'))
+            ->setPostalCode($request->input('postal_code'))
+            ->setExternalReference($customer->id)
             ->setNotificationDisabled($request->input('notification_disabled'))
             ->setAdditionalEmails($request->input('additional_emails'))
             ->setMunicipalInscription($request->input('municipal_inscription'))
@@ -252,9 +252,8 @@ class CustomerController extends Controller
     protected function updateAsaasCustomer($customer, $asaasCustomer)
     {
         try {
-           
-            $response = Asaas::customer()->update($customer->customer_id_external, $asaasCustomer);
 
+            $response = Asaas::customer()->update($customer->customer_id_external, $asaasCustomer);
         } catch (\Exception $e) {
             // Lidar com erros ao atualizar o cliente no Asaas
             Log::error('Erro ao atualizar o cliente no Asaas: ' . $e->getMessage());
