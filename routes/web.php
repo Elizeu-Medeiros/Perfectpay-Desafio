@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\CustomerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PaymentController;
@@ -17,3 +16,5 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // Rotas para CRUD de Clientes protegidas por autenticação
 Route::resource('customer', CustomerController::class);
+
+Route::resource('payments', PaymentController::class);

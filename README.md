@@ -17,13 +17,13 @@ Este é um projeto Laravel que demonstra a integração com a API do Asaas para 
 1. Clone o repositório para sua máquina local:
 
     ```bash
-    git clone https://github.com/seu-usuario/seu-projeto.git
+    git clone git@github.com:Elizeu-Medeiros/Perfectpay-Desafio.git
     ```
 
 2. Acesse o diretório do projeto:
 
     ```bash
-    cd seu-projeto
+    cd Perfectpay-Desafio
     ```
 
 3. Instale as dependências do PHP com o Composer:
@@ -163,7 +163,7 @@ Contribuições são bem-vindas! Se você quiser melhorar este projeto, siga est
 5. Abra um Pull Request.
 
 
-### Observação: 
+### Observação para avaliadores: 
 
 O arquivo .env.example já inclui as configurações essenciais para o banco de dados, chave de aplicativo e integração com o Asaas. Antes de iniciar a aplicação, lembre-se de configurar o seu arquivo .env com as informações pertinentes.
 

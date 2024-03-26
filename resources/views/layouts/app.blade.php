@@ -61,7 +61,7 @@
 
                                 <a class="dropdown-item" href="{{ route('customer.show', auth()->id()) }}">Meus dados</a>
 
-                                <a class="dropdown-item" href="#">Produtos</a>
+                                <a class="dropdown-item" href="{{ route('payments.index') }}">Pagamento</a>
 
                                 <!-- Adicione mais itens de menu conforme necessário -->
                                 <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault();
