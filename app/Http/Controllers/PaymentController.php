@@ -72,12 +72,12 @@ class PaymentController extends Controller
             // Criar pagamento no Asaas
             $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
             $returnPayment = $this->createAsaasPayment($asaasPayment);
-
+          
             // Extrair o ID retornado pelo Asaas
             $asaasPaymentId = $returnPayment->getId();
 
             // Atualizar o modelo Payment com o ID retornado pelo Asaas
-            $payment->payment_external = $asaasPaymentId;
+            $payment->external_reference = $asaasPaymentId;
             $payment->save();
 
             DB::commit();
@@ -118,10 +118,11 @@ class PaymentController extends Controller
     public function edit(string $id)
     {
         try {
-
+           
             // pega dados do usuário logado e seu relacionamente se existir
             $payment = Payment::find($id);
-            $user = $payment->payment->user;
+            $user = $payment->customer->user;
+           
             // Retornar a view com os detalhes do payment
             return view('payments.edit', compact('payment', 'user'));
         } catch (ModelNotFoundException $e) {
@@ -225,7 +226,7 @@ class PaymentController extends Controller
     {
         try {
 
-            $response = Asaas::charging()->update($payment->payment_external, $asaasPayment);
+            $response = Asaas::charging()->update($payment->external_reference, $asaasPayment);
         } catch (\Exception $e) {
             // Lidar com erros ao atualizar o pagamento no Asaas
             Log::error('Erro ao atualizar o pagamento no Asaas: ' . $e->getMessage());
