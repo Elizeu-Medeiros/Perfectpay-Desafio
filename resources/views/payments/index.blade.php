@@ -29,6 +29,7 @@
                                 <th>Forma de Pagamento</th>
                                 <th>Valor</th>
                                 <th>Vencimento</th>
+                                <th>Dt. Cadastro</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -40,6 +41,7 @@
                                 <td>{{ $payment->billing_type }}</td>
                                 <td>R$ {{ number_format($payment->value, 2, ',', '.') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($payment->creadted_at)->format('d/m/Y - H:m') }}</td>
                                 <td>
                                     <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm" title="Detalhes">
                                         <i class="fas fa-info-circle fa-sm"></i>

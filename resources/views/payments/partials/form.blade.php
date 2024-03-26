@@ -102,7 +102,7 @@
         <!-- Valor total da cobrança parcelada -->
         <div class="col-md-3">
             <div class="mb-3">
-                <label class="form-label" for="total_value">Valor Total da Cobrança Parcelada</label>
+                <label class="form-label" for="total_value">Total da Parcelada</label>
                 <input type="number" step="0.01" class="form-control" id="total_value" name="total_value" value="{{ $payment->total_value ?? old('total_value')  }}">
             </div>
         </div>
