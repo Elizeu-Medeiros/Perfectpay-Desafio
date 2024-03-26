@@ -5,13 +5,14 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreUpdatePaymentRequest;
 use App\Models\Payment;
 use App\Models\User;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Jetimob\Asaas\Facades\Asaas;
-use Jetimob\Asaas\Entity\Customer\Customer as AsaasCustomer;
+use Jetimob\Asaas\Entity\Charging\Charging;
 
 class PaymentController extends Controller
 {
@@ -42,10 +43,8 @@ class PaymentController extends Controller
     {
         try {
             $user = Auth::user();
-            // Verificar se o usuário possui um pagamento relacionado
-            $customer = $user->customer ?? null;
 
-            return view('payments.create', compact('customer', 'user'));
+            return view('payments.create', compact('user'));
         } catch (ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Pagamento não encontrado.');
         } catch (\Exception $e) {
@@ -64,31 +63,22 @@ class PaymentController extends Controller
             // Obter os dados validados do formulário
             $validatedData = $request->validated();
 
-            dd('parei aqui');
-            // Verificar e associar o cliente com o usuário, se necessário
-            // if (!$user->customer) {
-            //     $customer = new Customer();
-            //     $customer->user()->associate($user);
-            // } else {
-            //     $customer = $user->customer;
-            // }
+            $payment = new Payment();
 
-            // Preencher os dados do cliente com os dados validados do formulário
-            // $customer->fill($request->all());
-            // $customer->save();
-
-
+            // Preencher os dados do payment com os dados validados do formulário
+            $payment->fill($request->all());
+            $payment->save();
 
             // Criar pagamento no Asaas
-            // $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
-            // $returnCustomer = $this->createAsaasPayment($asaasPayment);
+            $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
+            $returnPayment = $this->createAsaasPayment($asaasPayment);
 
             // Extrair o ID retornado pelo Asaas
-            // $asaasCustomerId = $returnCustomer->getId();
+            $asaasPaymentId = $returnPayment->getId();
 
-            // Atualizar o modelo Customer com o ID retornado pelo Asaas
-            // $payment->customer_id_external = $asaasCustomerId;
-            // $payment->save();
+            // Atualizar o modelo Payment com o ID retornado pelo Asaas
+            $payment->payment_external = $asaasPaymentId;
+            $payment->save();
 
             DB::commit();
         } catch (\Exception $e) {
@@ -98,7 +88,7 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.');
         }
         // Redirecionar para a página apropriada após a atualização
-        return redirect()->route('payments.show', ['payments' => $payment->id])->with('success', 'Pagamento inserido com sucesso.');
+        return redirect()->route('payments.index', ['payments' => $payment->id])->with('success', 'Pagamento inserido com sucesso.');
     }
 
     /**
@@ -106,7 +96,20 @@ class PaymentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        try {
+
+            // pega dados do usuário logado e seu relacionamente se existir
+            $payment = Payment::find($id);
+
+            // Retornar a view com os detalhes do payment
+            return view('payments.show', compact('payment'));
+        } catch (ModelNotFoundException $e) {
+            // Redirecionar de volta com uma mensagem de erro se o payment não for encontrado
+            return redirect()->back()->with('error', 'Pagamento não encontrado.');
+        } catch (\Exception $e) {
+            // Lidar com qualquer outra exceção inesperada
+            return redirect()->back()->with('error', 'Falha ao buscar detalhes do payment. ' . $e->getMessage());
+        }
     }
 
     /**
@@ -114,15 +117,52 @@ class PaymentController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        try {
+
+            // pega dados do usuário logado e seu relacionamente se existir
+            $payment = Payment::find($id);
+            $user = $payment->payment->user;
+            // Retornar a view com os detalhes do payment
+            return view('payments.edit', compact('payment', 'user'));
+        } catch (ModelNotFoundException $e) {
+            // Redirecionar de volta com uma mensagem de erro se o payment não for encontrado
+            return redirect()->back()->with('error', 'Pagamento não encontrado.');
+        } catch (\Exception $e) {
+            // Lidar com qualquer outra exceção inesperada
+            return redirect()->back()->with('error', 'Falha ao buscar detalhes do payment. ' . $e->getMessage());
+        }
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(StoreUpdatePaymentRequest $request, string $id)
     {
-        //
+        DB::beginTransaction();
+
+        try {
+            // Obter os dados validados do formulário
+            $validatedData = $request->validated();
+
+            $payment = Payment::find($id);
+            $payment->fill($request->all());
+            $payment->save();
+
+            // Atualizar o payment no Asaas
+            $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
+            $this->updateAsaasPayment($payment, $asaasPayment);
+
+
+            DB::commit();
+        } catch (\Exception $e) {
+            // Lidar com qualquer exceção inesperada
+            Log::error($e);
+            DB::rollback();
+            return redirect()->back()->with('error', 'Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.');
+        }
+
+        // Redirecionar para a página apropriada após a atualização
+        return redirect()->route('payments.index')->with('success', 'Pagamento atualizados com sucesso.');
     }
 
     /**
@@ -138,14 +178,58 @@ class PaymentController extends Controller
      *
      * @param Request $request
      * @param Payment $payment
-     * @return AsaasCustomer
+     * @return AsaasPayment
      */
-    private function createAsaasCustomerFromRequest(Request $request, Payment $payment)
+    private function createAsaasPaymentFromRequest(Request $request, Payment $payment)
     {
-        $asaasCustomer = new AsaasCustomer();
-        $asaasCustomer->setName($request->input('name'));
+        $charging = new Charging;
+        $charging->setCustomer($request->input('customer'))
+        ->setDueDate($request->input('due_date'))
+        ->setBillingType($request->input('billing_type'))
+        ->setValue($request->input('value'))
+        ->setDescription($request->input('description'))
+        ->setExternalReference($payment->id)
+            ->setInstallmentCount($request->input('isntallment_count'))
+            // ->setTotalValue($request->input('name'))
+            // ->setDescription($request->input('name'))
+            // ->setDescription($request->input('name'))
+            // ->setDescription($request->input('name'))
+            // ->setDescription($request->input('name'))
+        ;
 
+        return $charging;
+    }
 
-        return $asaasCustomer;
+    protected function createAsaasPayment($asaasPayment)
+    {
+        try {
+            $response = Asaas::charging()->create($asaasPayment);
+
+            return $response;
+        } catch (\Exception $e) {
+            // Lidar com erros ao criar o payment no Asaas
+            Log::error('Erro ao criar o payment no Asaas: ' . $e->getMessage());
+            throw new Exception('Erro ao criar o payment no Asaas: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Atualiza o payment no Asaas.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\Payment  $payment
+     * @return void
+     * @throws \Exception
+     */
+    protected function updateAsaasPayment($payment, $asaasPayment)
+    {
+        try {
+
+            $response = Asaas::charging()->update($payment->payment_external, $asaasPayment);
+        } catch (\Exception $e) {
+            // Lidar com erros ao atualizar o pagamento no Asaas
+            Log::error('Erro ao atualizar o pagamento no Asaas: ' . $e->getMessage());
+            throw new \Exception('Erro ao atualizar o pagamento no Asaas: ' . $e->getMessage());
+        }
     }
 }

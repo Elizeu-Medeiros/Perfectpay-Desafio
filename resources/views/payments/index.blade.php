@@ -26,9 +26,10 @@
                             <tr>
                                 <th>ID</th>
                                 <th>Nome</th>
-                                <th>Telefone</th>
-                                <th>Celular</th>
-                                <th>Email</th>
+                                <th>Forma de Pagamento</th>
+                                <th>Valor</th>
+                                <th>Vencimento</th>
+                                <th>Dt. Cadastro</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -36,17 +37,30 @@
                             @foreach ($payments as $payment)
                             <tr>
                                 <td>{{ $payment->id }}</td>
-                                <td>{{ $payment->user->name }}</td>
-                                <td>{{ $payment->payment->phone }}</td>
-                                <td>{{ $payment->payment->mobile_phone }}</td>
-                                <td>{{ $payment->user->email }}</td>
+                                <td>{{ $payment->customer->user->name }}</td>
+                                <td>{{ $payment->billing_type }}</td>
+                                <td>R$ {{ number_format($payment->value, 2, ',', '.') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
+                                <td>{{ \Carbon\Carbon::parse($payment->creadted_at)->format('d/m/Y - H:m') }}</td>
                                 <td>
-                                    <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm">Detalhes</a>
-                                    <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-primary btn-sm">Editar</a>
+                                    <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm" title="Detalhes">
+                                        <i class="fas fa-info-circle fa-sm"></i>
+                                    </a>
+
+                                    <span style="margin-right: 5px;"></span> <!-- Espaçamento entre os botões -->
+
+                                    <a href="{{ route('payments.edit', $payment->id) }}" class="btn btn-primary btn-sm" title="Editar">
+                                        <i class="fas fa-edit fa-sm"></i>
+                                    </a>
+
+                                    <span style="margin-right: 5px;"></span> <!-- Espaçamento entre os botões -->
+
                                     <form action="{{ route('payments.destroy', $payment->id) }}" method="POST" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este paymente?')">Excluir</button>
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Tem certeza que deseja excluir este pagamento?')" title="Excluir">
+                                            <i class="fas fa-trash-alt fa-sm"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>

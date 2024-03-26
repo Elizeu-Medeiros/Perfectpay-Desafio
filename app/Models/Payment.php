@@ -9,7 +9,6 @@ class Payment extends Model
 {
     protected $fillable = [
         'customer_id', // ID do cliente associado a este pagamento
-        'customer',
         'billing_type',
         'value',
         'due_date',
@@ -32,4 +31,6 @@ class Payment extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    
 }
