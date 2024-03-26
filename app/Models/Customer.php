@@ -12,6 +12,7 @@ class Customer extends Model
 
     protected $fillable = [
         'user_id',
+        'customer_id_external',
         'cpf_cnpj',
         'phone',
         'mobile_phone',
@@ -20,7 +21,6 @@ class Customer extends Model
         'complement',
         'province',
         'postal_code',
-        'external_reference',
         'notification_disabled',
         'additional_emails',
         'municipal_inscription',

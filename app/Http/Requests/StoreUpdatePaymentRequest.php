@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreUpdateCustomerRequest extends FormRequest
+class StoreUpdatePaymentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,26 +22,22 @@ class StoreUpdateCustomerRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer' => 'required|string',
-            'billing_type' => 'require|string',
-            'value' => 'require|float',
-            'due_date' => 
-            'cpf_cnpj' => 'required|string|max:15',
+            'customer' => 'required',
+            'billing_type' => 'required',
+            'value' => 'required|numeric',
+            'due_date' =>  'required|date',
         ];
     }
 
     public function messages()
     {
         return [
-
-            'name' => [
-                'required' => 'O nome é obrigatório.',
-                'string' => 'O campo nome não pode ter mais de 255 caracteres.',
-            ],
-            'cpf_cnpj' =>  [
-                'required' => 'O CPF ou CNPJ é obrigatório.',
-                'string' => 'O CPF ou CNPJ deve ser uma string.',
-            ]
+            'customer.required' => 'Você deve cadastrar o cliente antes.',
+            'billing_type.required' => 'Escolha uma forma de pagamento.',
+            'value.required' => 'Qual o valor da cobrança',
+            'value.numeric' => 'O valor da cobrança deve ser numérico',
+            'due_date.required' => 'Preencha a data do vencimento',
+            'due_date.date' => 'Digite uma data válida!',
         ];
     }
 }
