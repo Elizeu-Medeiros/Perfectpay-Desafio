@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained()->onDelete('cascade');
-            $table->string('customer');
+            $table->unsignedBigInteger('customer_id');
             $table->enum('billing_type', ['UNDEFINED', 'PIX', 'BOLETO', 'CREDIT_CARD'])->default('UNDEFINED');
             $table->float('value');
             $table->date('due_date');
@@ -31,6 +30,8 @@ return new class extends Migration
             $table->json('split')->nullable();
             $table->json('callback')->nullable();
             $table->timestamps();
+
+            $table->foreign('customer_id')->references('id')->on('customers');
         });
     }
 
