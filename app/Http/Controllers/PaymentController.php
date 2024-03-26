@@ -24,6 +24,8 @@ class PaymentController extends Controller
 
             $payments = Payment::all();
 
+            // dd($payments);
+
             // Retornar a view com os detalhes do pagamento
             return view('payments.index', compact('payments'));
         } catch (ModelNotFoundException $e) {
@@ -64,21 +66,14 @@ class PaymentController extends Controller
             // Obter os dados validados do formulário
             $validatedData = $request->validated();
 
-            dd('parei aqui');
-            // Verificar e associar o cliente com o usuário, se necessário
-            // if (!$user->customer) {
-            //     $customer = new Customer();
-            //     $customer->user()->associate($user);
-            // } else {
-            //     $customer = $user->customer;
-            // }
+            $payment = new Payment();
 
             // Preencher os dados do cliente com os dados validados do formulário
-            // $customer->fill($request->all());
-            // $customer->save();
+            $payment->fill($request->all());
 
+            $payment->save();
 
-
+            
             // Criar pagamento no Asaas
             // $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
             // $returnCustomer = $this->createAsaasPayment($asaasPayment);
@@ -98,7 +93,7 @@ class PaymentController extends Controller
             return redirect()->back()->with('error', 'Ocorreu um erro ao processar a solicitação. Por favor, tente novamente.');
         }
         // Redirecionar para a página apropriada após a atualização
-        return redirect()->route('payments.show', ['payments' => $payment->id])->with('success', 'Pagamento inserido com sucesso.');
+        return redirect()->route('payments.index', ['payments' => $payment->id])->with('success', 'Pagamento inserido com sucesso.');
     }
 
     /**
