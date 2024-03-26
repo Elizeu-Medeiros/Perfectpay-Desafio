@@ -14,7 +14,12 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-// Rotas para CRUD de Clientes protegidas por autenticação
-Route::resource('customer', CustomerController::class);
 
-Route::resource('payments', PaymentController::class);
+// Rotas protegidas por autenticação
+Route::middleware(['auth'])->group(function () {
+    // Rotas para CRUD de Clientes
+    Route::resource('customer', CustomerController::class);
+
+    // Rotas para CRUD de Pagamentos
+    Route::resource('payments', PaymentController::class);
+});
