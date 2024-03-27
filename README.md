@@ -152,6 +152,20 @@ Este é um projeto Laravel que demonstra a integração com a API do Asaas para 
 3. Faça as alterações desejadas no formulário.
 4. Clique em "Atualizar".
 
+### Gerar Pagamento:
+
+1. No menu superior à direita, clique para expandir os menus e selecione "Pagamento".
+2. Na Lista de Pagamentos, Clique em "Novo Pagamento".
+3. Preencha o formulário com as informações obrigatórias.
+4. Clique em "Cadastrar".
+
+### Efetuar Pagamento:
+                    
+1. Após realizar o cadastro, você será redirecionado para a lista com as os pagamentos.
+2. Na Lista de Pagamentos, selecione e Clique no botão na coluna de Pagamento.
+3. Faça o pagamento conforme forma de pagamento selecionado
+                    
+
 ## Contribuição
 
 Contribuições são bem-vindas! Se você quiser melhorar este projeto, siga estas etapas:
