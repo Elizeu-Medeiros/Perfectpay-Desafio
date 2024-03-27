@@ -72,13 +72,11 @@ class PaymentController extends Controller
             // Criar pagamento no Asaas
             $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
             $returnPayment = $this->createAsaasPayment($asaasPayment);
-          
-            // Extrair o ID retornado pelo Asaas
-            $asaasPaymentId = $returnPayment->getId();
 
-            // Atualizar o modelo Payment com o ID retornado pelo Asaas
-            $payment->external_reference = $asaasPaymentId;
-            $payment->save();
+
+            if ($returnPayment->getStatusCode() == 200) {
+                $this->savePayment($payment, $returnPayment);
+            }
 
             DB::commit();
         } catch (\Exception $e) {
@@ -118,11 +116,11 @@ class PaymentController extends Controller
     public function edit(string $id)
     {
         try {
-           
+
             // pega dados do usuário logado e seu relacionamente se existir
             $payment = Payment::find($id);
             $user = $payment->customer->user;
-           
+
             // Retornar a view com os detalhes do payment
             return view('payments.edit', compact('payment', 'user'));
         } catch (ModelNotFoundException $e) {
@@ -152,7 +150,6 @@ class PaymentController extends Controller
             // Atualizar o payment no Asaas
             $asaasPayment = $this->createAsaasPaymentFromRequest($request, $payment);
             $this->updateAsaasPayment($payment, $asaasPayment);
-
 
             DB::commit();
         } catch (\Exception $e) {
@@ -188,8 +185,8 @@ class PaymentController extends Controller
         ->setDueDate($request->input('due_date'))
         ->setBillingType($request->input('billing_type'))
         ->setValue($request->input('value'))
-        ->setDescription($request->input('description'))
-        ->setExternalReference($payment->id)
+            ->setDescription($request->input('description'))
+            ->setExternalReference($payment->id)
             ->setInstallmentCount($request->input('isntallment_count'))
             // ->setTotalValue($request->input('name'))
             // ->setDescription($request->input('name'))
@@ -232,5 +229,21 @@ class PaymentController extends Controller
             Log::error('Erro ao atualizar o pagamento no Asaas: ' . $e->getMessage());
             throw new \Exception('Erro ao atualizar o pagamento no Asaas: ' . $e->getMessage());
         }
+    }
+
+    public function savePayment(Payment $payment, $returnPayment)
+    {
+        // Atualizar o modelo Payment com o retornado pelo Asaas
+        $payment->external_reference = $returnPayment->getId();
+        $payment->invoice_number = $returnPayment->getInvoiceNumber();
+        $payment->status = $returnPayment->getStatus();
+        $payment->invoice_url = $returnPayment->getInvoiceUrl();
+
+        if ($returnPayment->getBillingType() == "BOLETO") {
+            $payment->bank_slip_url = $returnPayment->getBankSlipUrl();
+            $payment->nosso_numero = $returnPayment->getNossoNumero();
+        }
+
+        $payment->save();
     }
 }
