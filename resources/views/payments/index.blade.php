@@ -30,6 +30,7 @@
                                 <th>Valor</th>
                                 <th>Vencimento</th>
                                 <th>Dt. Cadastro</th>
+                                <th>Pagamento</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -43,6 +44,24 @@
                                 <td>{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($payment->creadted_at)->format('d/m/Y - H:m') }}</td>
                                 <td>
+                                    @if ($payment->billing_type === 'PIX')
+                                    <a href="{{ $payment->pix_link }}" target="_brank" class="btn btn-primary btn-sm">
+                                        <i class="fas fa-credit-card fa-sm"></i> Pagar com PIX</a>
+                                    @elseif ($payment->billing_type === 'BOLETO')
+                                    <a href="{{ $payment->bank_slip_url }}" target="_brank" class="btn btn-info btn-sm">
+                                        <i class="fas fa-credit-card fa-sm"></i> Pagar com Boleto Bancário</a>
+                                    @elseif ($payment->billing_type === 'CREDIT_CARD')
+                                    <a href="{{ $payment->credit_card_link }}" target="_brank" class="btn btn-success btn-sm">
+                                        <i class="fas fa-credit-card fa-sm"></i> Pagar com Cartão de Crédito</a>
+                                    @else
+                                    <a href="{{ $payment->invoice_url }}" target="_brank" class="btn btn-success btn-sm">
+                                        <i class="fas fa-dollar-sign fa-sm"></i> Escolhar uma opção de pagamento
+                                    </a>
+                                    @endif
+
+                                </td>
+                                <td>
+
                                     <a href="{{ route('payments.show', $payment->id) }}" class="btn btn-info btn-sm" title="Detalhes">
                                         <i class="fas fa-info-circle fa-sm"></i>
                                     </a>
@@ -73,4 +92,5 @@
         </div>
     </div>
 </div>
+
 @endsection

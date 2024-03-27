@@ -18,6 +18,11 @@ class Payment extends Model
         'installment_count',
         'total_value',
         'installment_value',
+        'invoice_url',
+        'bank_slip_url',
+        'invoice_number',
+        'nosso_numero',
+        'status',
         'discount',
         'interest',
         'fine',
@@ -32,5 +37,5 @@ class Payment extends Model
         return $this->belongsTo(Customer::class);
     }
 
-    
+
 }

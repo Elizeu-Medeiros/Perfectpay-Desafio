@@ -22,6 +22,11 @@ return new class extends Migration
             $table->string('external_reference')->nullable();
             $table->integer('installment_count')->nullable();
             $table->float('total_value')->nullable();
+            $table->string('invoice_number')->nullable();
+            $table->string('invoice_url')->nullable();
+            $table->string('bank_slip_url')->nullable();
+            $table->string('nosso_numero')->nullable();
+            $table->string('status')->nullable();
             $table->float('installment_value')->nullable();
             $table->json('discount')->nullable();
             $table->json('interest')->nullable();
