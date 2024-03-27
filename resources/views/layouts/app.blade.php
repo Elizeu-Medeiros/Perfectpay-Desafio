@@ -59,7 +59,7 @@
 
                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                                 <!-- Coloque os itens do menu aqui -->
-
+                                <a class="dropdown-item" href="{{ route('home') }}">Dashboard</a>
                                 <a class="dropdown-item" href="{{ route('customer.show', auth()->id()) }}">Meus dados</a>
 
                                 <a class="dropdown-item" href="{{ route('payments.index') }}">Pagamento</a>
